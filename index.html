@@ -1,528 +1,596 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI README Generator</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0f0f13;--surface:#1a1a24;--surface2:#22223a;--border:#2d2d4a;
-  --primary:#6c5ce7;--primary-hover:#7c6ff7;--accent:#00cec9;
-  --text:#e8e8f0;--text2:#9090b0;--danger:#ff6b6b;--success:#00b894;
-  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,0.3);
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-a{color:var(--accent);text-decoration:none}
-
-/* Header */
-.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:2rem;text-align:center;border-bottom:1px solid var(--border)}
-.header h1{font-size:2rem;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
-.header p{color:var(--text2);font-size:1rem}
-.header i{margin-right:.5rem}
-
-/* Layout */
-.container{max-width:1400px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-@media(max-width:900px){.container{grid-template-columns:1fr}}
-
-/* Cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
-.card-title{font-size:1.1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;color:var(--accent)}
-
-/* Form */
-.form-group{margin-bottom:1rem}
-.form-group label{display:block;font-size:.85rem;color:var(--text2);margin-bottom:.4rem;font-weight:500}
-.form-group input,.form-group textarea,.form-group select{
-  width:100%;padding:.7rem 1rem;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);font-size:.95rem;transition:border .2s;font-family:inherit
-}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
-.form-group textarea{resize:vertical;min-height:80px}
-.form-group select option{background:var(--surface2);color:var(--text)}
-
-/* Template selector */
-.templates{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-bottom:1rem}
-.tmpl-btn{
-  padding:.7rem;background:var(--surface2);border:2px solid var(--border);border-radius:8px;
-  color:var(--text);cursor:pointer;text-align:center;transition:all .2s;font-size:.85rem
-}
-.tmpl-btn:hover{border-color:var(--primary);background:rgba(108,92,231,.1)}
-.tmpl-btn.active{border-color:var(--primary);background:rgba(108,92,231,.15);color:var(--primary)}
-.tmpl-btn i{display:block;font-size:1.3rem;margin-bottom:.3rem}
-
-/* Checkbox group */
-.checkbox-group{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
-.checkbox-group label{
-  display:flex;align-items:center;gap:.4rem;padding:.4rem .8rem;
-  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
-  font-size:.82rem;cursor:pointer;transition:all .2s;user-select:none
-}
-.checkbox-group label:hover{border-color:var(--primary)}
-.checkbox-group input[type=checkbox]{accent-color:var(--primary)}
-
-/* Buttons */
-.btn{
-  padding:.75rem 1.5rem;border:none;border-radius:8px;font-size:.95rem;font-weight:600;
-  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem
-}
-.btn-primary{background:linear-gradient(135deg,var(--primary),#5a4bd1);color:#fff}
-.btn-primary:hover{background:linear-gradient(135deg,var(--primary-hover),#6c5ce7);transform:translateY(-1px)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;--green:#3fb950;--red:#f85149;--radius:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--accent)}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+header{text-align:center;padding:40px 0 30px}
+header h1{font-size:2.2rem;background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:var(--text2);margin-top:8px;font-size:1.05rem}
+.main{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column}
+.panel-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.panel-title span{font-size:1.2rem}
+label{display:block;font-size:.875rem;font-weight:500;color:var(--text2);margin-bottom:6px;margin-top:14px}
+label:first-of-type{margin-top:0}
+input,textarea,select{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.9rem;font-family:inherit;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.templates{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+.tmpl-btn{padding:12px;background:var(--surface2);border:2px solid var(--border);border-radius:var(--radius);color:var(--text);cursor:pointer;text-align:center;transition:all .2s;font-size:.85rem}
+.tmpl-btn:hover{border-color:var(--accent);background:#1c2333}
+.tmpl-btn.active{border-color:var(--accent);background:rgba(88,166,255,.1)}
+.tmpl-btn .icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.tmpl-btn .name{font-weight:600}
+.tmpl-btn .desc{font-size:.75rem;color:var(--text2);margin-top:2px}
+.btn-row{display:flex;gap:10px;margin-top:20px}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent2);color:#fff}
+.btn-primary:hover{background:var(--accent)}
 .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.btn-secondary:hover{border-color:var(--primary)}
-.btn-success{background:var(--success);color:#fff}
-.btn-success:hover{background:#00a884}
-.btn-group{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
-
-/* Preview */
-.preview-area{
-  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-  padding:1.5rem;min-height:400px;max-height:70vh;overflow-y:auto;font-size:.9rem;line-height:1.7
-}
-.preview-area h1,.preview-area h2,.preview-area h3{color:var(--text);margin:1rem 0 .5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-.preview-area h1{font-size:1.6rem} .preview-area h2{font-size:1.3rem} .preview-area h3{font-size:1.1rem}
-.preview-area code{background:rgba(108,92,231,.15);padding:.15rem .4rem;border-radius:4px;font-size:.85rem;color:var(--accent)}
-.preview-area pre{background:#12121e;padding:1rem;border-radius:8px;overflow-x:auto;margin:.8rem 0}
-.preview-area pre code{background:none;padding:0;color:#c8c8e0}
-.preview-area ul,.preview-area ol{padding-left:1.5rem;margin:.5rem 0}
-.preview-area li{margin:.2rem 0}
-.preview-area blockquote{border-left:3px solid var(--primary);padding-left:1rem;color:var(--text2);margin:.5rem 0}
-.preview-area table{width:100%;border-collapse:collapse;margin:.8rem 0}
-.preview-area th,.preview-area td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
-.preview-area th{background:var(--surface)}
-.preview-area img{max-width:100%;border-radius:4px}
-.preview-area a{color:var(--accent)}
-.preview-area hr{border:none;border-top:1px solid var(--border);margin:1rem 0}
-
-/* Tabs */
-.tabs{display:flex;gap:0;margin-bottom:1rem;border-bottom:2px solid var(--border)}
-.tab-btn{
-  padding:.6rem 1.2rem;background:none;border:none;color:var(--text2);cursor:pointer;
-  font-size:.9rem;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s
-}
-.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
-
-/* Loading */
-.loading{display:none;align-items:center;gap:.8rem;padding:1rem;color:var(--text2)}
-.loading.show{display:flex}
-.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Toast */
-.toast{
-  position:fixed;bottom:2rem;right:2rem;padding:.8rem 1.5rem;background:var(--success);
-  color:#fff;border-radius:8px;font-size:.9rem;transform:translateY(100px);opacity:0;
-  transition:all .3s;z-index:999;box-shadow:var(--shadow)
-}
+.btn-secondary:hover{border-color:var(--accent)}
+.btn-success{background:#238636;color:#fff}
+.btn-success:hover{background:var(--green)}
+.preview-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.tab-btn{padding:8px 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);cursor:pointer;font-size:.9rem;font-weight:500;transition:all .2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-btn:hover{color:var(--text)}
+.preview-content{flex:1;overflow:auto;min-height:400px}
+#markdown-raw{display:none;width:100%;height:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:16px;color:var(--text);font-family:'SFMono-Regular',Consolas,monospace;font-size:.85rem;resize:none;white-space:pre-wrap;word-break:break-word}
+#markdown-preview{padding:16px}
+#markdown-preview h1{font-size:1.8rem;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px}
+#markdown-preview h2{font-size:1.4rem;border-bottom:1px solid var(--border);padding-bottom:6px;margin:24px 0 12px}
+#markdown-preview h3{font-size:1.15rem;margin:20px 0 10px}
+#markdown-preview p{margin:8px 0}
+#markdown-preview code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:.85em;font-family:'SFMono-Regular',Consolas,monospace}
+#markdown-preview pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:16px;overflow-x:auto;margin:12px 0}
+#markdown-preview pre code{background:none;padding:0}
+#markdown-preview ul,#markdown-preview ol{padding-left:24px;margin:8px 0}
+#markdown-preview li{margin:4px 0}
+#markdown-preview blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text2);margin:12px 0}
+#markdown-preview img{max-width:100%}
+#markdown-preview a{color:var(--accent)}
+#markdown-preview table{border-collapse:collapse;width:100%;margin:12px 0}
+#markdown-preview th,#markdown-preview td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+#markdown-preview th{background:var(--surface2)}
+#markdown-preview hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.toast{position:fixed;bottom:30px;right:30px;background:var(--green);color:#fff;padding:12px 24px;border-radius:var(--radius);font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s;z-index:999;font-size:.9rem}
 .toast.show{transform:translateY(0);opacity:1}
-
-/* API Key */
-.api-key-bar{
-  background:var(--surface);border-bottom:1px solid var(--border);padding:.8rem 2rem;
-  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center
-}
-.api-key-bar label{font-size:.85rem;color:var(--text2);white-space:nowrap}
-.api-key-bar input{
-  flex:1;max-width:400px;padding:.5rem .8rem;background:var(--surface2);border:1px solid var(--border);
-  border-radius:6px;color:var(--text);font-size:.85rem;font-family:monospace
-}
-.api-key-bar input:focus{outline:none;border-color:var(--primary)}
-
-/* Raw markdown */
-.raw-md{
-  width:100%;min-height:400px;max-height:70vh;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:1rem;color:var(--text);font-family:'Fira Code',monospace;font-size:.85rem;
-  resize:vertical;display:none
-}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text2)}
-
-/* Badge in preview */
-.preview-area img[alt*="badge"],.preview-area img[alt*="Badge"],.preview-area img[src*="shields.io"],.preview-area img[src*="badge"]{display:inline-block;margin:.1rem .2rem;vertical-align:middle}
+.features-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.feature-tag{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.8rem;display:flex;align-items:center;gap:4px}
+.feature-tag .remove{cursor:pointer;color:var(--red);font-weight:bold;margin-left:2px}
+.feature-input-row{display:flex;gap:8px;margin-top:6px}
+.feature-input-row input{flex:1}
+.feature-input-row .btn{padding:8px 14px;white-space:nowrap}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.badge-check{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.badge-check:hover{border-color:var(--accent)}
+.badge-check input{accent-color:var(--accent)}
+footer{text-align:center;padding:30px 0;color:var(--text2);font-size:.85rem}
+@media(max-width:900px){.main{grid-template-columns:1fr}.templates{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.templates{grid-template-columns:1fr}.btn-row{flex-direction:column}}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1><i class="fas fa-file-alt"></i> AI README Generator</h1>
-  <p>输入项目信息，AI 自动生成专业 README.md</p>
-</div>
-
-<div class="api-key-bar">
-  <label><i class="fas fa-key"></i> DeepSeek API Key:</label>
-  <input type="password" id="apiKey" placeholder="sk-..." value="">
-  <button class="btn btn-secondary" onclick="toggleKeyVisibility()" style="padding:.5rem .8rem;font-size:.8rem"><i class="fas fa-eye" id="eyeIcon"></i></button>
-</div>
-
 <div class="container">
-  <!-- Left: Input -->
-  <div>
-    <div class="card">
-      <div class="card-title"><i class="fas fa-cog"></i> 项目信息</div>
-
-      <div class="form-group">
-        <label>项目名称 *</label>
-        <input type="text" id="projectName" placeholder="例如：my-awesome-project">
-      </div>
-
-      <div class="form-group">
-        <label>项目描述 *</label>
-        <textarea id="projectDesc" rows="3" placeholder="简要描述项目的功能和用途..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>技术栈（逗号分隔）</label>
-        <input type="text" id="techStack" placeholder="例如：React, Node.js, MongoDB, Docker">
-      </div>
-
-      <div class="form-group">
-        <label>GitHub 仓库地址（可选）</label>
-        <input type="text" id="repoUrl" placeholder="https://github.com/username/repo">
-      </div>
-
-      <div class="form-group">
-        <label>许可证</label>
-        <select id="license">
-          <option value="MIT">MIT</option>
-          <option value="Apache-2.0">Apache 2.0</option>
-          <option value="GPL-3.0">GPL 3.0</option>
-          <option value="BSD-3-Clause">BSD 3-Clause</option>
-          <option value="ISC">ISC</option>
-          <option value="none">无</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:1rem">
-      <div class="card-title"><i class="fas fa-palette"></i> README 模板</div>
-      <div class="templates">
-        <div class="tmpl-btn active" data-tmpl="opensource" onclick="selectTemplate(this)">
-          <i class="fas fa-code-branch"></i> 开源项目
+  <header>
+    <h1>📝 AI README Generator</h1>
+    <p>Generate professional README.md files for your projects in seconds</p>
+  </header>
+  <div class="main">
+    <div class="panel">
+      <div class="panel-title"><span>⚙️</span> Configuration</div>
+      <label>Template</label>
+      <div class="templates" id="templates">
+        <div class="tmpl-btn active" data-tmpl="minimal" onclick="selectTemplate(this)">
+          <div class="icon">⚡</div><div class="name">Minimal</div><div class="desc">Clean & simple</div>
+        </div>
+        <div class="tmpl-btn" data-tmpl="detailed" onclick="selectTemplate(this)">
+          <div class="icon">📖</div><div class="name">Detailed</div><div class="desc">Full documentation</div>
+        </div>
+        <div class="tmpl-btn" data-tmpl="opensource" onclick="selectTemplate(this)">
+          <div class="icon">🌍</div><div class="name">Open Source</div><div class="desc">Community-ready</div>
         </div>
         <div class="tmpl-btn" data-tmpl="npm" onclick="selectTemplate(this)">
-          <i class="fab fa-npm"></i> NPM 包
-        </div>
-        <div class="tmpl-btn" data-tmpl="api" onclick="selectTemplate(this)">
-          <i class="fas fa-server"></i> API 文档
-        </div>
-        <div class="tmpl-btn" data-tmpl="personal" onclick="selectTemplate(this)">
-          <i class="fas fa-user"></i> 个人项目
+          <div class="icon">📦</div><div class="name">NPM Package</div><div class="desc">Package-focused</div>
         </div>
       </div>
-
-      <div class="card-title" style="margin-top:.5rem"><i class="fas fa-puzzle-piece"></i> 包含章节</div>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="badges" checked> Badges</label>
-        <label><input type="checkbox" value="toc" checked> 目录</label>
-        <label><input type="checkbox" value="features" checked> 功能特性</label>
-        <label><input type="checkbox" value="install" checked> 安装指南</label>
-        <label><input type="checkbox" value="usage" checked> 使用方法</label>
-        <label><input type="checkbox" value="api"> API 文档</label>
-        <label><input type="checkbox" value="config"> 配置说明</label>
-        <label><input type="checkbox" value="contributing" checked> 贡献指南</label>
-        <label><input type="checkbox" value="changelog"> 更新日志</label>
-        <label><input type="checkbox" value="faq"> FAQ</label>
-        <label><input type="checkbox" value="roadmap"> 路线图</label>
-        <label><input type="checkbox" value="license" checked> 许可证</label>
+      <label for="projectName">Project Name *</label>
+      <input type="text" id="projectName" placeholder="my-awesome-project" oninput="generate()">
+      <label for="description">Description *</label>
+      <textarea id="description" rows="2" placeholder="A brief description of your project..." oninput="generate()"></textarea>
+      <label for="techStack">Tech Stack (comma separated)</label>
+      <input type="text" id="techStack" placeholder="React, Node.js, TypeScript, MongoDB" oninput="generate()">
+      <label>Features</label>
+      <div class="feature-input-row">
+        <input type="text" id="featureInput" placeholder="Add a feature..." onkeydown="if(event.key==='Enter')addFeature()">
+        <button class="btn btn-secondary" onclick="addFeature()">+ Add</button>
       </div>
-
-      <div class="form-group">
-        <label>语言</label>
-        <select id="lang">
-          <option value="en">English</option>
-          <option value="zh">中文</option>
-          <option value="both">中英双语</option>
-        </select>
+      <div class="features-list" id="featuresList"></div>
+      <label for="license">License</label>
+      <select id="license" onchange="generate()">
+        <option value="MIT">MIT</option>
+        <option value="Apache-2.0">Apache 2.0</option>
+        <option value="GPL-3.0">GPL 3.0</option>
+        <option value="BSD-3-Clause">BSD 3-Clause</option>
+        <option value="ISC">ISC</option>
+        <option value="none">None</option>
+      </select>
+      <label for="author">Author / GitHub Username</label>
+      <input type="text" id="author" placeholder="your-username" oninput="generate()">
+      <label>Badges</label>
+      <div class="badge-row">
+        <label class="badge-check"><input type="checkbox" checked onchange="generate()"> License</label>
+        <label class="badge-check"><input type="checkbox" checked onchange="generate()"> Stars</label>
+        <label class="badge-check"><input type="checkbox" checked onchange="generate()"> Forks</label>
+        <label class="badge-check"><input type="checkbox" onchange="generate()"> Issues</label>
+        <label class="badge-check"><input type="checkbox" onchange="generate()"> NPM Version</label>
+        <label class="badge-check"><input type="checkbox" onchange="generate()"> Build</label>
       </div>
-
-      <div class="btn-group">
-        <button class="btn btn-primary" id="generateBtn" onclick="generate()">
-          <i class="fas fa-magic"></i> 生成 README
-        </button>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generate()">🔄 Generate</button>
+        <button class="btn btn-success" onclick="copyMarkdown()">📋 Copy Markdown</button>
+        <button class="btn btn-secondary" onclick="downloadMarkdown()">⬇ Download</button>
       </div>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <span>AI 正在生成中，请稍候...</span>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>👁️</span> Preview</div>
+      <div class="preview-tabs">
+        <button class="tab-btn active" onclick="switchTab('preview',this)">Preview</button>
+        <button class="tab-btn" onclick="switchTab('raw',this)">Markdown</button>
+      </div>
+      <div class="preview-content">
+        <div id="markdown-preview"></div>
+        <textarea id="markdown-raw" readonly></textarea>
       </div>
     </div>
   </div>
-
-  <!-- Right: Preview -->
-  <div>
-    <div class="card" style="height:100%;display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
-        <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab('preview',this)">预览</button>
-          <button class="tab-btn" onclick="switchTab('raw',this)">Markdown</button>
-        </div>
-        <div class="btn-group" style="margin-top:0">
-          <button class="btn btn-success" onclick="copyMarkdown()" style="padding:.5rem 1rem;font-size:.85rem">
-            <i class="fas fa-copy"></i> 复制
-          </button>
-          <button class="btn btn-secondary" onclick="downloadMd()" style="padding:.5rem 1rem;font-size:.85rem">
-            <i class="fas fa-download"></i> 下载
-          </button>
-        </div>
-      </div>
-      <div class="preview-area" id="preview">
-        <div style="text-align:center;color:var(--text2);padding:4rem 1rem">
-          <i class="fas fa-file-alt" style="font-size:3rem;margin-bottom:1rem;display:block;opacity:.3"></i>
-          <p>填写项目信息并点击「生成 README」</p>
-          <p style="font-size:.85rem;margin-top:.5rem">AI 将为你生成专业的 README.md</p>
-        </div>
-      </div>
-      <textarea class="raw-md" id="rawMd" spellcheck="false"></textarea>
-    </div>
-  </div>
+  <footer>Built with ❤️ — Generate beautiful READMEs for your projects</footer>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<!-- Markdown parser: marked.js -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-// State
-let currentTemplate = 'opensource';
+let features = [];
+let currentTemplate = 'minimal';
 let generatedMd = '';
 
-// Template selection
 function selectTemplate(el) {
   document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   currentTemplate = el.dataset.tmpl;
+  generate();
 }
 
-// Tab switching
+function addFeature() {
+  const input = document.getElementById('featureInput');
+  const val = input.value.trim();
+  if (!val) return;
+  features.push(val);
+  input.value = '';
+  renderFeatures();
+  generate();
+}
+
+function removeFeature(i) {
+  features.splice(i, 1);
+  renderFeatures();
+  generate();
+}
+
+function renderFeatures() {
+  const el = document.getElementById('featuresList');
+  el.innerHTML = features.map((f, i) =>
+    `<span class="feature-tag">${f}<span class="remove" onclick="removeFeature(${i})">×</span></span>`
+  ).join('');
+}
+
+function getBadges() {
+  const checks = document.querySelectorAll('.badge-row input[type=checkbox]');
+  const labels = ['License','Stars','Forks','Issues','NPM Version','Build'];
+  const name = document.getElementById('projectName').value.trim() || 'project';
+  const author = document.getElementById('author').value.trim() || 'username';
+  const license = document.getElementById('license').value;
+  const badges = [];
+  checks.forEach((c, i) => {
+    if (!c.checked) return;
+    const repo = `${author}/${name}`;
+    switch(labels[i]) {
+      case 'License':
+        badges.push(`![License](https://img.shields.io/badge/license-${license}-blue.svg)`);
+        break;
+      case 'Stars':
+        badges.push(`![Stars](https://img.shields.io/github/stars/${repo}?style=social)`);
+        break;
+      case 'Forks':
+        badges.push(`![Forks](https://img.shields.io/github/forks/${repo}?style=social)`);
+        break;
+      case 'Issues':
+        badges.push(`![Issues](https://img.shields.io/github/issues/${repo})`);
+        break;
+      case 'NPM Version':
+        badges.push(`![npm](https://img.shields.io/npm/v/${name})`);
+        break;
+      case 'Build':
+        badges.push(`![Build](https://img.shields.io/github/actions/workflow/status/${repo}/ci.yml?branch=main)`);
+        break;
+    }
+  });
+  return badges.join(' ');
+}
+
+function generate() {
+  const name = document.getElementById('projectName').value.trim();
+  const desc = document.getElementById('description').value.trim();
+  const tech = document.getElementById('techStack').value.trim();
+  const license = document.getElementById('license').value;
+  const author = document.getElementById('author').value.trim() || 'username';
+  const badges = getBadges();
+
+  const techList = tech ? tech.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const featList = features.length ? features : ['Feature 1', 'Feature 2'];
+
+  let md = '';
+
+  if (currentTemplate === 'minimal') {
+    md = genMinimal(name, desc, badges, techList, featList, license, author);
+  } else if (currentTemplate === 'detailed') {
+    md = genDetailed(name, desc, badges, techList, featList, license, author);
+  } else if (currentTemplate === 'opensource') {
+    md = genOpenSource(name, desc, badges, techList, featList, license, author);
+  } else if (currentTemplate === 'npm') {
+    md = genNpm(name, desc, badges, techList, featList, license, author);
+  }
+
+  generatedMd = md;
+  document.getElementById('markdown-preview').innerHTML = marked.parse(md);
+  document.getElementById('markdown-raw').value = md;
+}
+
+function genMinimal(name, desc, badges, tech, feat, license, author) {
+  return `# ${name || 'Project Name'}
+
+${badges}
+
+${desc || 'A brief description of your project.'}
+
+## Features
+
+${feat.map(f => `- ${f}`).join('\n')}
+
+## Quick Start
+
+\`\`\`bash
+git clone https://github.com/${author}/${name || 'project'}.git
+cd ${name || 'project'}
+npm install
+npm start
+\`\`\`
+${tech.length ? `\n## Tech Stack\n\n${tech.map(t => `- ${t}`).join('\n')}\n` : ''}
+## License
+
+${license !== 'none' ? `This project is licensed under the [${license}](LICENSE) license.` : 'No license specified.'}
+`;
+}
+
+function genDetailed(name, desc, badges, tech, feat, license, author) {
+  return `# ${name || 'Project Name'}
+
+${badges}
+
+> ${desc || 'A brief description of your project.'}
+
+## 📋 Table of Contents
+
+- [About](#about)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Tech Stack](#tech-stack)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 📖 About
+
+${desc || 'Provide a longer description of your project here. Explain the problem it solves and why it exists.'}
+
+## ✨ Features
+
+${feat.map(f => `- ✅ ${f}`).join('\n')}
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+\`\`\`bash
+node >= 18.0.0
+npm >= 9.0.0
+\`\`\`
+
+### Installation
+
+1. Clone the repository
+\`\`\`bash
+git clone https://github.com/${author}/${name || 'project'}.git
+\`\`\`
+
+2. Navigate to the project directory
+\`\`\`bash
+cd ${name || 'project'}
+\`\`\`
+
+3. Install dependencies
+\`\`\`bash
+npm install
+\`\`\`
+
+4. Set up environment variables
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+5. Start the development server
+\`\`\`bash
+npm run dev
+\`\`\`
+
+## 💡 Usage
+
+\`\`\`bash
+npm start
+\`\`\`
+
+Visit \`http://localhost:3000\` to view the application.
+${tech.length ? `\n## 🛠️ Tech Stack\n\n| Technology | Purpose |\n|---|---|\n${tech.map(t => `| ${t} | - |`).join('\n')}\n` : ''}
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (\`git checkout -b feature/amazing-feature\`)
+3. Commit your changes (\`git commit -m 'Add amazing feature'\`)
+4. Push to the branch (\`git push origin feature/amazing-feature\`)
+5. Open a Pull Request
+
+## 📄 License
+
+${license !== 'none' ? `This project is licensed under the [${license}](LICENSE) license.` : 'No license specified.'}
+
+## 👤 Author
+
+**${author}**
+- GitHub: [@${author}](https://github.com/${author})
+
+---
+
+⭐ Star this repo if you find it helpful!
+`;
+}
+
+function genOpenSource(name, desc, badges, tech, feat, license, author) {
+  return `<div align="center">
+
+# ${name || 'Project Name'}
+
+${badges}
+
+${desc || 'A brief description of your project.'}
+
+[Report Bug](https://github.com/${author}/${name || 'project'}/issues) · [Request Feature](https://github.com/${author}/${name || 'project'}/issues)
+
+</div>
+
+---
+
+## 🌟 About The Project
+
+${desc || 'Describe what makes this project special and why the community should care.'}
+
+### Built With
+
+${tech.length ? tech.map(t => `- ${t}`).join('\n') : '- Add your tech stack here'}
+
+## ✨ Features
+
+${feat.map(f => `- 🎯 ${f}`).join('\n')}
+
+## 🏁 Getting Started
+
+### Prerequisites
+
+\`\`\`bash
+npm install npm@latest -g
+\`\`\`
+
+### Installation
+
+\`\`\`bash
+# Clone the repo
+git clone https://github.com/${author}/${name || 'project'}.git
+
+# Install dependencies
+cd ${name || 'project'}
+npm install
+
+# Run the project
+npm start
+\`\`\`
+
+## 📖 Usage
+
+\`\`\`bash
+npm start
+\`\`\`
+
+For more examples, please refer to the [Documentation](https://github.com/${author}/${name || 'project'}/wiki).
+
+## 🗺️ Roadmap
+
+- [x] Initial release
+- [ ] Add more features
+- [ ] Improve documentation
+- [ ] Add tests
+
+See the [open issues](https://github.com/${author}/${name || 'project'}/issues) for a full list of proposed features and known issues.
+
+## 🤝 Contributing
+
+Contributions make the open source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (\`git checkout -b feature/AmazingFeature\`)
+3. Commit your Changes (\`git commit -m 'Add some AmazingFeature'\`)
+4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
+5. Open a Pull Request
+
+## 📄 License
+
+${license !== 'none' ? `Distributed under the ${license} License. See \`LICENSE\` for more information.` : 'No license specified.'}
+
+## 📬 Contact
+
+${author} - [@${author}](https://github.com/${author})
+
+Project Link: [https://github.com/${author}/${name || 'project'}](https://github.com/${author}/${name || 'project'})
+
+## 🙏 Acknowledgments
+
+- [Shields.io](https://shields.io)
+- [Choose an Open Source License](https://choosealicense.com)
+`;
+}
+
+function genNpm(name, desc, badges, tech, feat, license, author) {
+  return `# ${name || 'package-name'}
+
+${badges}
+
+${desc || 'A brief description of your package.'}
+
+## Installation
+
+\`\`\`bash
+# npm
+npm install ${name || 'package-name'}
+
+# yarn
+yarn add ${name || 'package-name'}
+
+# pnpm
+pnpm add ${name || 'package-name'}
+\`\`\`
+
+## Features
+
+${feat.map(f => `- ${f}`).join('\n')}
+
+## Usage
+
+\`\`\`javascript
+import { something } from '${name || 'package-name'}';
+
+// Basic usage
+const result = something();
+console.log(result);
+\`\`\`
+
+### CommonJS
+
+\`\`\`javascript
+const { something } = require('${name || 'package-name'}');
+\`\`\`
+
+## API Reference
+
+### \`something(options?)\`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| \`option1\` | \`string\` | \`'default'\` | Description of option1 |
+| \`option2\` | \`boolean\` | \`false\` | Description of option2 |
+
+**Returns:** \`Promise<Result>\`
+${tech.length ? `\n## Tech Stack\n\n${tech.map(t => `- ${t}`).join('\n')}\n` : ''}
+## Development
+
+\`\`\`bash
+# Clone and install
+git clone https://github.com/${author}/${name || 'package-name'}.git
+cd ${name || 'package-name'}
+npm install
+
+# Run tests
+npm test
+
+# Build
+npm run build
+
+# Lint
+npm run lint
+\`\`\`
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (\`git checkout -b feature/new-feature\`)
+3. Commit your changes (\`git commit -am 'Add new feature'\`)
+4. Push to the branch (\`git push origin feature/new-feature\`)
+5. Create a Pull Request
+
+## License
+
+${license !== 'none' ? `[${license}](LICENSE) © [${author}](https://github.com/${author})` : 'No license specified.'}
+`;
+}
+
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const preview = document.getElementById('preview');
-  const raw = document.getElementById('rawMd');
-  if (tab === 'preview') { preview.style.display = 'block'; raw.style.display = 'none'; }
-  else { preview.style.display = 'none'; raw.style.display = 'block'; }
+  document.getElementById('markdown-preview').style.display = tab === 'preview' ? 'block' : 'none';
+  document.getElementById('markdown-raw').style.display = tab === 'raw' ? 'block' : 'none';
 }
 
-// API key visibility
-function toggleKeyVisibility() {
-  const input = document.getElementById('apiKey');
-  const icon = document.getElementById('eyeIcon');
-  if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
-  else { input.type = 'password'; icon.className = 'fas fa-eye'; }
-}
-
-// Get selected sections
-function getSelectedSections() {
-  return Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(c => c.value);
-}
-
-// Toast
-function showToast(msg, duration = 2500) {
+function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// Copy
 function copyMarkdown() {
-  if (!generatedMd) { showToast('还没有生成内容'); return; }
-  navigator.clipboard.writeText(generatedMd).then(() => showToast('✅ 已复制到剪贴板'));
+  if (!generatedMd) { generate(); }
+  navigator.clipboard.writeText(generatedMd).then(() => showToast('✅ Copied to clipboard!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = generatedMd;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ Copied to clipboard!');
+  });
 }
 
-// Download
-function downloadMd() {
-  if (!generatedMd) { showToast('还没有生成内容'); return; }
+function downloadMarkdown() {
+  if (!generatedMd) { generate(); }
   const blob = new Blob([generatedMd], { type: 'text/markdown' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'README.md';
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast('✅ 已下载 README.md');
+  showToast('⬇ Downloaded README.md');
 }
 
-// Render markdown
-function renderPreview(md) {
-  generatedMd = md;
-  document.getElementById('rawMd').value = md;
-  document.getElementById('preview').innerHTML = marked.parse(md, {
-    breaks: true,
-    gfm: true
-  });
-}
-
-// Build prompt
-function buildPrompt() {
-  const name = document.getElementById('projectName').value.trim();
-  const desc = document.getElementById('projectDesc').value.trim();
-  const tech = document.getElementById('techStack').value.trim();
-  const repo = document.getElementById('repoUrl').value.trim();
-  const license = document.getElementById('license').value;
-  const lang = document.getElementById('lang').value;
-  const sections = getSelectedSections();
-
-  const templateDescriptions = {
-    opensource: '开源项目 README（完整、专业、社区友好）',
-    npm: 'NPM 包 README（安装、API、示例为主）',
-    api: 'API 文档 README（端点、请求/响应、认证为主）',
-    personal: '个人项目 README（简洁、展示为主）'
-  };
-
-  const langMap = { en: '英文', zh: '中文', both: '中英双语（先英文后中文）' };
-
-  const sectionNames = {
-    badges: 'Shields.io badges（根据技术栈生成对应的badge，如build status、version、license、downloads等）',
-    toc: '目录（Table of Contents）',
-    features: '功能特性（Features）',
-    install: '安装指南（Installation）',
-    usage: '使用方法（Usage，含代码示例）',
-    api: 'API 文档（API Reference）',
-    config: '配置说明（Configuration）',
-    contributing: '贡献指南（Contributing）',
-    changelog: '更新日志（Changelog）',
-    faq: '常见问题（FAQ）',
-    roadmap: '路线图（Roadmap）',
-    license: '许可证（License）'
-  };
-
-  const selectedSectionDesc = sections.map(s => sectionNames[s] || s).join('\n- ');
-
-  return `你是一个专业的技术文档撰写专家。请根据以下信息生成一份高质量的 README.md 文件。
-
-## 项目信息
-- 项目名称：${name}
-- 项目描述：${desc}
-- 技术栈：${tech || '未指定'}
-- GitHub 仓库：${repo || '未指定'}
-- 许可证：${license}
-
-## 要求
-- 模板风格：${templateDescriptions[currentTemplate]}
-- 语言：${langMap[lang]}
-- 必须包含以下章节：
-- ${selectedSectionDesc}
-
-## 格式要求
-1. 输出纯 Markdown 格式，不要包含 \`\`\`markdown 代码块包裹
-2. badges 使用 shields.io 的真实 URL 格式（如 https://img.shields.io/badge/...）
-3. 代码示例要完整、可运行
-4. 结构清晰，排版美观
-5. 内容要专业、实用，不要有占位符或 TODO
-6. 如果有 GitHub 仓库地址，badges 和链接要使用真实地址`;
-}
-
-// Generate
-async function generate() {
-  const name = document.getElementById('projectName').value.trim();
-  const desc = document.getElementById('projectDesc').value.trim();
-  const apiKey = document.getElementById('apiKey').value.trim();
-
-  if (!name || !desc) { showToast('请填写项目名称和描述'); return; }
-  if (!apiKey) { showToast('请输入 DeepSeek API Key'); return; }
-
-  const btn = document.getElementById('generateBtn');
-  const loading = document.getElementById('loading');
-  btn.disabled = true;
-  loading.classList.add('show');
-
-  // Switch to preview tab
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-btn')[0].classList.add('active');
-  document.getElementById('preview').style.display = 'block';
-  document.getElementById('rawMd').style.display = 'none';
-
-  const prompt = buildPrompt();
-
-  // Streaming
-  try {
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: '你是一个专业的技术文档撰写专家，擅长编写高质量的 README.md 文件。直接输出 Markdown 内容，不要用代码块包裹。' },
-          { role: 'user', content: prompt }
-        ],
-        stream: true,
-        temperature: 0.7,
-        max_tokens: 4096
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `API 请求失败 (${response.status})`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let md = '';
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith('data:')) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === '[DONE]') continue;
-
-        try {
-          const json = JSON.parse(data);
-          const delta = json.choices?.[0]?.delta?.content;
-          if (delta) {
-            md += delta;
-            renderPreview(md);
-          }
-        } catch (e) { /* skip parse errors */ }
-      }
-    }
-
-    if (md) {
-      showToast('✅ README 生成完成！');
-    } else {
-      showToast('生成结果为空，请检查输入');
-    }
-  } catch (err) {
-    showToast('❌ ' + err.message);
-    console.error(err);
-  } finally {
-    btn.disabled = false;
-    loading.classList.remove('show');
-  }
-}
-
-// Raw markdown editing -> live preview
-document.getElementById('rawMd').addEventListener('input', function() {
-  generatedMd = this.value;
-  document.getElementById('preview').innerHTML = marked.parse(this.value, { breaks: true, gfm: true });
-});
-
-// Save API key to localStorage
-const savedKey = localStorage.getItem('deepseek_api_key');
-if (savedKey) document.getElementById('apiKey').value = savedKey;
-document.getElementById('apiKey').addEventListener('change', function() {
-  localStorage.setItem('deepseek_api_key', this.value);
-});
+// Initial generation
+generate();
 </script>
-<!-- MONETIZE:START -->
-<script src="monetize.js"></script>
-<!-- MONETIZE:END -->
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="130647" async data-cfasync="false"></script>
 </body>
 </html>
